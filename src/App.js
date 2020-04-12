@@ -1,24 +1,59 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import KeyManager from './utils/KeyManager';
+import GameView from './views/GameView';
+import { changeState } from './store/actions/game.actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { setKey, fireBullet, resetPlayer } from './store/actions/player.actions';
+import { resetEnemies } from './store/actions/enemy.actions';
+import EnemyManager from './utils/EnemyManager';
+import { MenuView } from './views/MenuView';
 
 function App() {
+
+  const HEIGHT = 600, WIDTH = 800;
+  const dispatch = useDispatch();
+  const gameState = useSelector(state => state.game.state);
+  const keyState = useSelector(state => state.player.keyState);
+
+  const handleMove = (direction) => {
+    dispatch(setKey(direction));
+  }
+
+  const handleStopMove = (direction) => {
+    dispatch(setKey(direction));
+  }
+
+  const handleFire = () => {
+    dispatch(fireBullet({x: 375, y: 590}));
+  }
+
+  const handlePause = () => {
+    if(gameState === "GAME_OVER"){
+      dispatch(resetEnemies());
+      dispatch(resetPlayer());
+      dispatch(changeState("IN_PLAY"));
+    }
+
+    if(gameState === "IN_PLAY"){
+      dispatch(changeState("MENU"));
+    }else{
+      dispatch(changeState("IN_PLAY"));
+    }
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{width: '100%', height: '100%', position:'absolute', display: 'flex', justifyContent: 'center'}}>
+      <KeyManager move={handleMove}
+                  stopMove={handleStopMove}
+                  fire={handleFire}
+                  pause={handlePause}
+                  keyState={keyState}/>
+        <EnemyManager />
+        <GameView height={HEIGHT}
+                  width={WIDTH}/>
+      {gameState !== 'IN_PLAY' &&
+        <MenuView gameState={gameState}/>
+      }
     </div>
   );
 }
