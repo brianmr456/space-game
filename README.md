@@ -1,3 +1,7 @@
+## Background
+
+This is a video game that uses react and redux. When I created this project, I was learning React and thought it would be fun to implement some of the knowledge I received from a video game development course I took in college. 
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
